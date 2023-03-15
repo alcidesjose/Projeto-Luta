@@ -71,12 +71,13 @@ class BigMonster extends Character {
 
 class Stage {
 
-    constructor(figther1, figther2, figther1El, fighter2El) {
+    constructor(figther1, figther2, figther1El, fighter2El,logObject) {
 
         this.figther1 = figther1;
         this.figther2 = figther2;
         this.figther1El = figther1El;
         this.fighter2El = fighter2El;
+        this.log = logObject;
       
 
     }
@@ -97,22 +98,67 @@ class Stage {
        
     update() {
     //Figther1
-    this.figther1El.querySelector('.name').innerHTML = `${this.figther1.name} - ${this.figther1.life} HP`;
+    this.figther1El.querySelector('.name').innerHTML = `${this.figther1.name} - ${this.figther1.life.toFixed(1)} HP`;
     let f1Pct = (this.figther1.life / this.figther1.maxLife) * 100;
     this.figther1El.querySelector('.lifebar .bar').style.width = `${f1Pct}%`;
 
     //Figther2
-    this.fighter2El.querySelector('.name').innerHTML = `${this.figther2.name} - ${this.figther2.life} HP`;
+    this.fighter2El.querySelector('.name').innerHTML = `${this.figther2.name} - ${this.figther2.life.toFixed(1)} HP`;
     let f2Pct = (this.figther2.life / this.figther2.maxLife) * 100;
     this.fighter2El.querySelector('.lifebar .bar').style.width = ` ${f2Pct}%`;
 
    }
     doAttack(attacking, attacked){
+if(attacking.life <= 0 || attacked.life <= 0) {
+    this.log.addMessage(`Atacando o mais fraco`);
+    return;
+}
 
-    console.log(`${attacking.name} está atacando ${attacked.name}`);
+let attackFactor = (Math.random() * 2).toFixed(2);
+let defenseFactor = (Math.random() * 2).toFixed(2);
+
+let actualAttack = attacking.attack * attackFactor;
+let actualDefense = attacking.defense * defenseFactor;
+
+if(actualAttack > actualDefense) {
+ attacked.life -= actualAttack;  
+
+ this.log.addMessage(`${attacking.name} causou ${actualAttack.toFixed(2)} de dano em ${attacked.name} `)
+}else {
+    this.log.addMessage(`${attacked.name} conseguiu defender...`)
+}
+
+     //console.log(actualAttack)
+   // console.log(`${attacking.name} está atacando ${attacked.name}`);
     this.update();
 
     }
        
 };
+
+
+
+class Log {
+    list = [];
+
+    constructor(listEl) {
+        this.listEl = listEl;
+    }
+
+    addMessage(msg) {
+        this.list.push(msg);
+        this.render();
+    }
+
+    render() {
+        this.listEl.innerHTML = '';
+
+        for (let i in this.list) {
+            this.listEl.innerHTML += `<li>${this.list[i]}</li>`;
+        }
+    }
+}
+
+
+
 
